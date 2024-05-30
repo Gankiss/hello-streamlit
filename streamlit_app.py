@@ -1,46 +1,63 @@
 import streamlit as st
-import base64
-
-# Set the black color scheme
-st.markdown(
-    """
-    <style>
-    .reportview-container {
-        background: black;
-        color: white;
-    }
-    .sidebar .sidebar-content {
-        background: black;
-        color: white;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+import random
+import string
+from collections import Counter
+import matplotlib.pyplot as plt
 
 # Title of the app
-st.title("Base64 Encoder/Decoder")
+st.title("Simple Data Analysis App")
 
-# User selection: encode or decode
-option = st.selectbox("Choose an option:", ["Encode", "Decode"])
+# Section 1: Random Data Generation and Visualization
+st.header("Random Data Generation and Visualization")
 
-# User input
-input_text = st.text_area("Enter the text to be encoded/decoded:")
+# Generate random data
+data_length = st.slider("Select the number of data points", 10, 100, 50)
+random_data = [random.randint(1, 100) for _ in range(data_length)]
+st.write("Generated Data:", random_data)
 
-if st.button("Submit"):
-    if option == "Encode":
-        # Encode the input text to Base64
-        encoded_text = base64.b64encode(input_text.encode()).decode()
-        st.write("Encoded Base64 text:", encoded_text)
-    elif option == "Decode":
-        try:
-            # Decode the input Base64 text
-            decoded_text = base64.b64decode(input_text.encode()).decode()
-            st.write("Decoded text:", decoded_text)
-        except Exception as e:
-            st.error(f"Error decoding Base64 text: {e}")
+# Visualize the data
+fig, ax = plt.subplots()
+ax.plot(random_data, marker='o')
+ax.set_title("Random Data Visualization")
+st.pyplot(fig)
+
+# Section 2: Basic Statistical Analysis
+st.header("Basic Statistical Analysis")
+mean_value = sum(random_data) / len(random_data)
+median_value = sorted(random_data)[len(random_data) // 2]
+mode_value = Counter(random_data).most_common(1)[0][0]
+
+st.write(f"Mean: {mean_value}")
+st.write(f"Median: {median_value}")
+st.write(f"Mode: {mode_value}")
+
+# Section 3: Text Analysis and Word Frequency Count
+st.header("Text Analysis and Word Frequency Count")
+
+# Input text
+input_text = st.text_area("Enter some text for analysis")
+
+if input_text:
+    # Clean and split the text
+    words = input_text.translate(str.maketrans('', '', string.punctuation)).lower().split()
+    
+    # Calculate word frequency
+    word_freq = Counter(words)
+    
+    st.write("Word Frequency:")
+    for word, freq in word_freq.items():
+        st.write(f"{word}: {freq}")
+    
+    # Visualize word frequency
+    fig, ax = plt.subplots()
+    ax.bar(word_freq.keys(), word_freq.values())
+    ax.set_title("Word Frequency Visualization")
+    plt.xticks(rotation=45)
+    st.pyplot(fig)
 
 # Footer
-st.markdown("**TEST**")
+st.markdown("**Developed by [Your Name]**")
+
+
 
 # https://hello-app-x2mmstm9z9.streamlit.app/
