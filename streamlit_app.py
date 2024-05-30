@@ -1,61 +1,64 @@
 import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
 
-# Initialize the game state
-if 'game_state' not in st.session_state:
-    st.session_state.game_state = [' ']*9
-    st.session_state.current_player = 'X'
-    st.session_state.winner = None
-    st.session_state.game_over = False
+# Title of the app
+st.title("Cybersecurity Analyst Dashboard")
 
-# Function to check for a winner
-def check_winner(state):
-    win_conditions = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8],  # rows
-        [0, 3, 6], [1, 4, 7], [2, 5, 8],  # columns
-        [0, 4, 8], [2, 4, 6]              # diagonals
-    ]
-    for condition in win_conditions:
-        if state[condition[0]] == state[condition[1]] == state[condition[2]] != ' ':
-            return state[condition[0]]
-    if ' ' not in state:
-        return 'Draw'
-    return None
+# Section for uploading log files
+st.header("Upload Log Files")
+uploaded_file = st.file_uploader("Choose a log file", type=["csv", "txt"])
 
-# Function to handle a move
-def make_move(index):
-    if st.session_state.game_state[index] == ' ' and not st.session_state.game_over:
-        st.session_state.game_state[index] = st.session_state.current_player
-        st.session_state.winner = check_winner(st.session_state.game_state)
-        if st.session_state.winner:
-            st.session_state.game_over = True
-        else:
-            st.session_state.current_player = 'O' if st.session_state.current_player == 'X' else 'X'
+if uploaded_file is not None:
+    # Assume the log file is in CSV format
+    logs_df = pd.read_csv(uploaded_file)
+    st.write("Log File Data")
+    st.dataframe(logs_df)
 
-# Display the game board
-def display_board():
-    for i in range(3):
-        cols = st.columns(3)
-        for j in range(3):
-            index = i*3 + j
-            if st.session_state.game_state[index] == ' ' and not st.session_state.game_over:
-                cols[j].button(' ', key=index, on_click=make_move, args=(index,))
-            else:
-                cols[j].button(st.session_state.game_state[index], key=index, disabled=True)
+    # Visualize log data
+    st.header("Log Data Visualization")
+    log_columns = st.multiselect("Select columns to visualize", logs_df.columns)
+    if log_columns:
+        st.line_chart(logs_df[log_columns])
 
-# Display the current game status
-st.title("Tic-Tac-Toe")
-display_board()
-if st.session_state.winner:
-    if st.session_state.winner == 'Draw':
-        st.write("It's a draw!")
-    else:
-        st.write(f"Player {st.session_state.winner} wins!")
-else:
-    st.write(f"Current player: {st.session_state.current_player}")
+# Section for threat data visualization
+st.header("Threat Data Visualization")
+# Dummy threat data
+threat_data = {
+    'Threat Type': ['Malware', 'Phishing', 'DDoS', 'Ransomware'],
+    'Occurrences': [45, 30, 15, 10]
+}
+threat_df = pd.DataFrame(threat_data)
+st.bar_chart(threat_df.set_index('Threat Type'))
 
-# Reset button
-if st.button('Restart Game'):
-    st.session_state.game_state = [' ']*9
-    st.session_state.current_player = 'X'
-    st.session_state.winner = None
-    st.session_state.game_over = False
+# Section for displaying alerts
+st.header("Recent Alerts")
+# Dummy alerts
+alerts = [
+    "Suspicious login detected from IP 192.168.1.1",
+    "Multiple failed login attempts",
+    "Malware detected in email attachment"
+]
+for alert in alerts:
+    st.warning(alert)
+
+# Section for network traffic analysis
+st.header("Network Traffic Analysis")
+# Dummy network traffic data
+traffic_data = {
+    'Time': pd.date_range(start='1/1/2024', periods=24, freq='H'),
+    'Traffic (MB)': [50, 45, 40, 60, 70, 65, 80, 85, 90, 95, 100, 110, 105, 100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50]
+}
+traffic_df = pd.DataFrame(traffic_data)
+st.line_chart(traffic_df.set_index('Time'))
+
+# Additional feature: User-defined query
+st.header("Custom Query")
+query = st.text_input("Enter a query (e.g., filter logs for a specific IP address)")
+if query:
+    st.write("Query results (dummy data):")
+    st.write(logs_df.head(5))  # In real application, process the query on logs_df
+
+# Footer
+st.markdown("**Developed by [Your Name]**")
+
