@@ -31,4 +31,4 @@ result = number1 + number2
 st.write("Result of addition:", result)
 
 # Footer
-st.markdown("**Test Project**")
+st.markdown("**Hello Jenners**")
