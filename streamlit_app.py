@@ -1,40 +1,61 @@
-import altair as alt
-import numpy as np
-import pandas as pd
 import streamlit as st
 
-"""
-# Welcome to Streamlit!
+# Initialize the game state
+if 'game_state' not in st.session_state:
+    st.session_state.game_state = [' ']*9
+    st.session_state.current_player = 'X'
+    st.session_state.winner = None
+    st.session_state.game_over = False
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:.
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+# Function to check for a winner
+def check_winner(state):
+    win_conditions = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],  # rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],  # columns
+        [0, 4, 8], [2, 4, 6]              # diagonals
+    ]
+    for condition in win_conditions:
+        if state[condition[0]] == state[condition[1]] == state[condition[2]] != ' ':
+            return state[condition[0]]
+    if ' ' not in state:
+        return 'Draw'
+    return None
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+# Function to handle a move
+def make_move(index):
+    if st.session_state.game_state[index] == ' ' and not st.session_state.game_over:
+        st.session_state.game_state[index] = st.session_state.current_player
+        st.session_state.winner = check_winner(st.session_state.game_state)
+        if st.session_state.winner:
+            st.session_state.game_over = True
+        else:
+            st.session_state.current_player = 'O' if st.session_state.current_player == 'X' else 'X'
 
-num_points = st.slider("Number of points in spiral", 1, 10000, 1100)
-num_turns = st.slider("Number of turns in spiral", 1, 300, 31)
+# Display the game board
+def display_board():
+    for i in range(3):
+        cols = st.columns(3)
+        for j in range(3):
+            index = i*3 + j
+            if st.session_state.game_state[index] == ' ' and not st.session_state.game_over:
+                cols[j].button(' ', key=index, on_click=make_move, args=(index,))
+            else:
+                cols[j].button(st.session_state.game_state[index], key=index, disabled=True)
 
-indices = np.linspace(0, 1, num_points)
-theta = 2 * np.pi * num_turns * indices
-radius = indices
+# Display the current game status
+st.title("Tic-Tac-Toe")
+display_board()
+if st.session_state.winner:
+    if st.session_state.winner == 'Draw':
+        st.write("It's a draw!")
+    else:
+        st.write(f"Player {st.session_state.winner} wins!")
+else:
+    st.write(f"Current player: {st.session_state.current_player}")
 
-x = radius * np.cos(theta)
-y = radius * np.sin(theta)
-
-df = pd.DataFrame({
-    "x": x,
-    "y": y,
-    "idx": indices,
-    "rand": np.random.randn(num_points),
-})
-
-st.altair_chart(alt.Chart(df, height=700, width=700)
-    .mark_point(filled=True)
-    .encode(
-        x=alt.X("x", axis=None),
-        y=alt.Y("y", axis=None),
-        color=alt.Color("idx", legend=None, scale=alt.Scale()),
-        size=alt.Size("rand", legend=None, scale=alt.Scale(range=[1, 150])),
-    ))
+# Reset button
+if st.button('Restart Game'):
+    st.session_state.game_state = [' ']*9
+    st.session_state.current_player = 'X'
+    st.session_state.winner = None
+    st.session_state.game_over = False
