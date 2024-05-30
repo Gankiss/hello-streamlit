@@ -1,4 +1,5 @@
 import streamlit as st
+import base64
 
 # Set the black color scheme
 st.markdown(
@@ -18,17 +19,26 @@ st.markdown(
 )
 
 # Title of the app
-st.title("Simple Addition App")
+st.title("Base64 Encoder/Decoder")
 
-# User inputs
-number1 = st.number_input("Enter first number:", step=1.0, format="%.2f")
-number2 = st.number_input("Enter second number:", step=1.0, format="%.2f")
+# User selection: encode or decode
+option = st.selectbox("Choose an option:", ["Encode", "Decode"])
 
-# Add the two numbers
-result = number1 + number2
+# User input
+input_text = st.text_area("Enter the text to be encoded/decoded:")
 
-# Display the result
-st.write("Result of addition:", result)
+if st.button("Submit"):
+    if option == "Encode":
+        # Encode the input text to Base64
+        encoded_text = base64.b64encode(input_text.encode()).decode()
+        st.write("Encoded Base64 text:", encoded_text)
+    elif option == "Decode":
+        try:
+            # Decode the input Base64 text
+            decoded_text = base64.b64decode(input_text.encode()).decode()
+            st.write("Decoded text:", decoded_text)
+        except Exception as e:
+            st.error(f"Error decoding Base64 text: {e}")
 
 # Footer
-st.markdown("**Hello Jenners**")
+st.markdown("**TEST**")
