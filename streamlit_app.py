@@ -1,52 +1,34 @@
 import streamlit as st
-import random
-import string
-from collections import Counter
+
+# Set the black color scheme
+st.markdown(
+    """
+    <style>
+    .reportview-container {
+        background: black;
+        color: white;
+    }
+    .sidebar .sidebar-content {
+        background: black;
+        color: white;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Title of the app
-st.title("Simple Data Analysis App")
+st.title("Simple Addition App")
 
-# Section 1: Random Data Generation and Visualization
-st.header("Random Data Generation and Visualization")
+# User inputs
+number1 = st.number_input("Enter first number:", step=1.0, format="%.2f")
+number2 = st.number_input("Enter second number:", step=1.0, format="%.2f")
 
-# Generate random data
-data_length = st.slider("Select the number of data points", 10, 100, 50)
-random_data = [random.randint(1, 100) for _ in range(data_length)]
-st.write("Generated Data:", random_data)
+# Add the two numbers
+result = number1 + number2
 
-# Visualize the data
-st.line_chart(random_data)
-
-# Section 2: Basic Statistical Analysis
-st.header("Basic Statistical Analysis")
-mean_value = sum(random_data) / len(random_data)
-median_value = sorted(random_data)[len(random_data) // 2]
-mode_value = Counter(random_data).most_common(1)[0][0]
-
-st.write(f"Mean: {mean_value}")
-st.write(f"Median: {median_value}")
-st.write(f"Mode: {mode_value}")
-
-# Section 3: Text Analysis and Word Frequency Count
-st.header("Text Analysis and Word Frequency Count")
-
-# Input text
-input_text = st.text_area("Enter some text for analysis")
-
-if input_text:
-    # Clean and split the text
-    words = input_text.translate(str.maketrans('', '', string.punctuation)).lower().split()
-    
-    # Calculate word frequency
-    word_freq = Counter(words)
-    
-    st.write("Word Frequency:")
-    for word, freq in word_freq.items():
-        st.write(f"{word}: {freq}")
-    
-    # Visualize word frequency
-    st.bar_chart(word_freq)
+# Display the result
+st.write("Result of addition:", result)
 
 # Footer
 st.markdown("**Developed by [Your Name]**")
-
