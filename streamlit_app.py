@@ -2,7 +2,6 @@ import streamlit as st
 import random
 import string
 from collections import Counter
-import matplotlib.pyplot as plt
 
 # Title of the app
 st.title("Simple Data Analysis App")
@@ -16,10 +15,7 @@ random_data = [random.randint(1, 100) for _ in range(data_length)]
 st.write("Generated Data:", random_data)
 
 # Visualize the data
-fig, ax = plt.subplots()
-ax.plot(random_data, marker='o')
-ax.set_title("Random Data Visualization")
-st.pyplot(fig)
+st.line_chart(random_data)
 
 # Section 2: Basic Statistical Analysis
 st.header("Basic Statistical Analysis")
@@ -49,11 +45,7 @@ if input_text:
         st.write(f"{word}: {freq}")
     
     # Visualize word frequency
-    fig, ax = plt.subplots()
-    ax.bar(word_freq.keys(), word_freq.values())
-    ax.set_title("Word Frequency Visualization")
-    plt.xticks(rotation=45)
-    st.pyplot(fig)
+    st.bar_chart(word_freq)
 
 # Footer
 st.markdown("**Developed by [Your Name]**")
