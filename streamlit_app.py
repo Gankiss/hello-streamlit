@@ -56,7 +56,7 @@ if input_text:
     st.pyplot(fig)
 
 # Footer
-st.markdown("**Developed by [Your Name]**")
+st.markdown("**TEST**")
 
 
 
