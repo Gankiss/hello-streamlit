@@ -26,7 +26,7 @@ if selected_country:
         st.write(f"{column}: {country_data[column]}")
 
 # Footer
-st.markdown("**Developed by [Your Name]**")
+st.markdown("**Test**")
 
 
 
